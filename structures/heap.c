@@ -12,9 +12,9 @@ typedef struct heap_t {
 	void **data;
 } heap_t;
 
-int getParentIndex(heap_t *heap, int index) { return index >> 1; }
-int getLeftIndex(heap_t *heap, int index) { return index << 1; }
-int getRightIndex(heap_t *heap, int index) { return (index << 1) + 1; }
+int getParentIndex(int index) { return index >> 1; }
+int getLeftIndex(int index) { return index << 1; }
+int getRightIndex(int index) { return (index << 1) + 1; }
 int isHeapEmpty(heap_t *heap) { return !heap->size; }
 int getHeapSize(heap_t *heap) { return heap->size; }
 void* peek(heap_t *heap, int index) { return heap->data[index]; }
@@ -30,8 +30,8 @@ heap_t* createHeap(int maxSize, int (*getter)(heap_t *, int)) {
 }
 
 void minHeapify(heap_t *heap, int i) {
-	int leftIndex = getLeftIndex(heap, i);
-	int rightIndex = getRightIndex(heap, i);
+	int leftIndex = getLeftIndex(i);
+	int rightIndex = getRightIndex(i);
 	int largest;
 
 	if (leftIndex <= heap->size && heap->getter(heap, leftIndex) < heap->getter(heap, i)) {
@@ -50,6 +50,12 @@ void minHeapify(heap_t *heap, int i) {
 	}
 }
 
+void buildMinHeap(heap_t *heap) {
+	for (int i = 1; i < heap->size / 2; i++) {
+		minHeapify(heap, i);
+	}
+}
+
 void enqueue(heap_t *heap, void *item) {
 	if (heap->size >= heap->maxSize) {
 		fprintf(stderr, "Heap overflow (%d items)\n", heap->size);
@@ -58,17 +64,7 @@ void enqueue(heap_t *heap, void *item) {
 
 	heap->data[++heap->size] = item;
 
-	int keyIndex = heap->size;
-	int parentIndex = getParentIndex(heap, keyIndex);
-
-	// e(key) < e(index) ---> minHeapify
-	// e(key) > e(index) ---> maxHeapify
-	while (parentIndex >= 1 && heap->getter(heap, keyIndex) < heap->getter(heap, parentIndex)) {
-		swap(heap->data[keyIndex], heap->data[parentIndex], void *);
-
-		keyIndex = parentIndex;
-		parentIndex = getParentIndex(heap, keyIndex);
-	}
+	buildMinHeap(heap);
 }
 
 void* dequeue(heap_t *heap) {
