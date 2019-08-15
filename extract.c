@@ -17,14 +17,12 @@ void extract(FILE *file) {
 	fscanf(file, "%c%c", &header[0], &header[1]);
 
 	thrashSize = header[0] >> 5;
-	treeSize = (byte_t)(header[0] << 7) << 1;
+	treeSize = (byte_t)(header[0] << 3) * 32;
 	treeSize += header[1];
 
 	fileSize -= 2 + treeSize;
 
-	printf("TAMANHO DO ARQUIVO (sem cabeçalho e arvore): %d\n", fileSize);
+	printf("TAMANHO DO ARQUIVO (sem cabecalho e arvore) %d\n", fileSize);
 	printf("TAMANHO DO LIXO %d\n", thrashSize);
 	printf("TAMANHO ARVORE %d\n", treeSize);
-
-	return 0;
 }
