@@ -1,7 +1,7 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-typedef struct hashelement_t {
+typedef struct element_t {
 	int key;
 	void *item;
 } element_t;
@@ -17,6 +17,10 @@ hashtable_t *createHashtable(int maxSize) {
 	newTable->maxSize = maxSize;
 
 	return newTable;
+}
+
+int has(hashtable_t *table, int key) {
+	return table->items[key] != NULL;
 }
 
 int put(hashtable_t *table, void *node, int value) {
