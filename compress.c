@@ -47,20 +47,20 @@ int compress(char *fileName) {
 	FILE *output = fopen(outputName, "wb");
 
 	heap_t *heap = createHeap(256, getFrequency);
-	long occurrences[256] = { 0 };
+	long byteFreq[256] = { 0 };
 
 	byte_t currentByte;
 	while (fscanf(file, "%c", &currentByte) != EOF) {
-		occurrences[currentByte]++;
+		byteFreq[currentByte]++;
 	}
 
 	for (int i = 0; i < 256; i++) {
-		if (occurrences[i]) {
-			huffnode_t *node = createHuffnode((byte_t)i, occurrences[i], NULL, NULL);
+		if (byteFreq[i]) {
+			huffnode_t *node = createHuffnode((byte_t)i, byteFreq[i], NULL, NULL);
 			enqueue(heap, node);
 		}
 	}
-	
+
 	buildMinHeap(heap);
 
 	DEBUG printf("A heap tem %d elementos\n", getHeapSize(heap));
@@ -78,7 +78,7 @@ int compress(char *fileName) {
 	DEBUG printf("A heap tem %d elementos\n", getHeapSize(heap));
 
 	huffnode_t *tree = (huffnode_t *)dequeue(heap);
-	int treeSize = 1 + getTreeSize(tree); // TO DO: arrumar a funcao pra n precisar somar 1 sempre
+	int treeSize = getTreeSize(tree);
 
 	DEBUG {
 		printf("---- INICIO ARVORE ----\n");
@@ -106,10 +106,10 @@ int compress(char *fileName) {
 		int numBits = (int)data[0];
 		uint16_t bits = data[1];
 
-		trashSize = 16 - numBits;
+		trashSize += 16 - numBits;
 
 		for (int i = numBits - 1; i >= 0; i--) {
-			compressedByte |= (bits & (1 << i)) > 0; // (bits & (1 << i)) >> i;
+			compressedByte |= (bits & (1 << i)) >> i;
 
 			if (cont == 7) {
 				fprintf(output, "%c", compressedByte);
