@@ -60,6 +60,12 @@ int extract(char *fileName) {
 	treeSize += header[1];
 
 	fileSize -= 2 + treeSize;
+	
+	DEBUG {
+		printf("TAMANHO LIXO: %d\n", trashSize);
+		printf("TAMANHO ARVORE: %d\n", treeSize);
+		printf("TAMANHO ARQUIVO: %d\n", fileSize);
+	}
 
 	int treePos = 0;
 	byte_t treeStr[treeSize];
@@ -93,7 +99,10 @@ int extract(char *fileName) {
 		}
 	}
 
-	for (int i = 7; i >= trashSize; i--) {
+	fscanf(file, "%c", &currentByte);
+
+	int lastByteMax = !trashSize ? 7 : trashSize;
+	for (int i = 7; i >= lastByteMax; i--) {
 		if (getBit(currentByte, i))
 			node = node->right;
 		else
@@ -101,7 +110,6 @@ int extract(char *fileName) {
 
 		if (isLeaf(node)) {
 			fprintf(output, "%c", (byte_t)node->byte);
-			break;
 		}
 	}
 
