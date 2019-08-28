@@ -61,8 +61,6 @@ int compress(char *fileName) {
 		}
 	}
 
-	buildMinHeap(heap);
-
 	DEBUG printf("A heap tem %d elementos\n", getHeapSize(heap));
 
 	while (getHeapSize(heap) > 1) {
