@@ -5,6 +5,7 @@
 
 typedef uint8_t byte_t;
 //typedef unsigned char byte_t;
+//typedef unsigned short uint16_t;
 
 typedef struct huffnode_t {
 	byte_t byte;

@@ -101,8 +101,7 @@ int extract(char *fileName) {
 
 	fscanf(file, "%c", &currentByte);
 
-	int lastByteMax = !trashSize ? 7 : trashSize;
-	for (int i = 7; i >= lastByteMax; i--) {
+	for (int i = 7; i >= trashSize; i--) {
 		if (getBit(currentByte, i))
 			node = node->right;
 		else

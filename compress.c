@@ -125,11 +125,10 @@ int compress(char *fileName) {
 	DEBUG printf("ULTIMO BYTE ANTES: %X\n", compressedByte);
 
 	trashSize = trashSize % 8;
-	if (trashSize)
+	if (trashSize) {
 		compressedByte <<= trashSize - 1;
-	fprintf(output, "%c", compressedByte);
-	// ORIG:  @1<FF><D9>
-	// NOSSO: @1<FF><A1>
+		fprintf(output, "%c", compressedByte);
+	}
 
 	DEBUG {
 		printf("ULTIMO BYTE DEPOIS: %X\n", compressedByte);
