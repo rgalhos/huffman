@@ -9,7 +9,7 @@
 #define DEBUG if (0)
 #endif
 
-typedef unsigned short uint16_t; // hã. talvez mudar isso ai
+//typedef unsigned short uint16_t; // hã. talvez mudar isso ai
 
 long getFrequency(heap_t *heap, int index) {
     return ((huffnode_t *)peek(heap, index))->frequency;
@@ -107,7 +107,9 @@ int compress(char *fileName) {
 		trashSize += 16 - numBits;
 
 		for (int i = numBits - 1; i >= 0; i--) {
-			compressedByte |= (bits & (1 << i)) >> i;
+			//compressedByte |= (bits & (1 << i)) >> i;
+			if (getBit(bits, i))
+				compressedByte |= 1;
 
 			if (cont == 7) {
 				fprintf(output, "%c", compressedByte);
@@ -120,11 +122,17 @@ int compress(char *fileName) {
 		}
 	}
 
+	DEBUG printf("ULTIMO BYTE ANTES: %X\n", compressedByte);
+
 	trashSize = trashSize % 8;
-	compressedByte <<= trashSize;
+	if (trashSize)
+		compressedByte <<= trashSize - 1;
 	fprintf(output, "%c", compressedByte);
+	// ORIG:  @1<FF><D9>
+	// NOSSO: @1<FF><A1>
 
 	DEBUG {
+		printf("ULTIMO BYTE DEPOIS: %X\n", compressedByte);
 		printf("TAMANHO DO LIXO: %d\n", trashSize);
 		printf("TAMANHO DA ARVORE: %d\n", treeSize);
 	}

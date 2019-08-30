@@ -1,11 +1,14 @@
 #ifndef HUFFNODE_H
 #define HUFFNODE_H
 
-typedef unsigned char byte_t;
+#include <stdint.h>
+
+typedef uint8_t byte_t;
+//typedef unsigned char byte_t;
 
 typedef struct huffnode_t {
 	byte_t byte;
-	int frequency;
+	long frequency;
 	struct huffnode_t *left;
 	struct huffnode_t *right;
 } huffnode_t;
