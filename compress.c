@@ -17,13 +17,13 @@ long getFrequency(heap_t *heap, int index) {
 
 void buildBytes(huffnode_t *tree, int current, int treeLevel, hashtable_t *map) {
 	if (isLeaf(tree)) {
-		DEBUG printf("LEAF: %c [%d] \t%d\n", tree->byte, current, treeLevel);
+		DEBUG printf("LEAF: %c [%d] \t%d\n", *((byte_t *)tree->item), current, treeLevel);
 
 		uint16_t *currentByte = (uint16_t *)malloc(2 * sizeof(uint16_t));
 		currentByte[0] = treeLevel;
 		currentByte[1] = current;
 
-		put(map, (void *)currentByte, (unsigned)tree->byte);
+		put(map, (void *)currentByte, *((byte_t *)tree->item));
 
 		return;
 	}
@@ -56,7 +56,10 @@ int compress(char *fileName) {
 
 	for (int i = 0; i < 256; i++) {
 		if (byteFreq[i]) {
-			huffnode_t *node = createHuffnode((byte_t)i, byteFreq[i], NULL, NULL);
+			byte_t *byte = (byte_t *)malloc(sizeof(byte_t));
+			*byte = i;
+
+			huffnode_t *node = createHuffnode((void *)byte, byteFreq[i], NULL, NULL);
 			enqueue(heap, node);
 		}
 	}
@@ -70,7 +73,7 @@ int compress(char *fileName) {
 
 		enqueue(heap, merged);
 
-		DEBUG printf("Merged %X [%ld] with %X [%ld] --> %c [%ld]\n", node1->byte, node1->frequency, node2->byte, node2->frequency, merged->byte, merged->frequency);
+		DEBUG printf("Merged %X [%ld] with %X [%ld] --> %c [%ld]\n", *((byte_t *)node1->item), node1->frequency, *((byte_t *)node2->item), node2->frequency, *((byte_t *)merged->item), merged->frequency);
 	}
 
 	DEBUG printf("A heap tem %d elementos\n", getHeapSize(heap));

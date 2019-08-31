@@ -8,15 +8,20 @@
 #endif
 
 huffnode_t* buildHuffTree(char *str, int *pos) {
-	huffnode_t *node = createHuffnode(str[*pos], -1, NULL, NULL);
+	byte_t *byte = (byte_t *)malloc(sizeof(byte_t));
+	*byte = str[*pos];
+
+	huffnode_t *node = createHuffnode((void *)byte, -1, NULL, NULL);
 
 	(*pos)++;
 
-	if (node->byte == '*') {
+	if (*byte == '*') {
 		node->left = buildHuffTree(str, pos);
 		node->right = buildHuffTree(str, pos);
-	} else if (node->byte == '\\') {
-		node->byte = str[*pos];
+	} else if (*byte == '\\') {
+		*byte = str[*pos];
+		node->item = (void *)byte;
+
 		(*pos)++;
 	}
 
@@ -93,7 +98,7 @@ int extract(char *fileName) {
 				node = node->left;
 
 			if (isLeaf(node)) {
-				fprintf(output, "%c", (byte_t)node->byte);
+				fprintf(output, "%c", *((byte_t *)node->item));
 				node = tree;
 			}
 		}
@@ -108,7 +113,7 @@ int extract(char *fileName) {
 			node = node->left;
 
 		if (isLeaf(node)) {
-			fprintf(output, "%c", (byte_t)node->byte);
+			fprintf(output, "%c", *((byte_t *)node->item));
 		}
 	}
 

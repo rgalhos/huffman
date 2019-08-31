@@ -8,7 +8,7 @@ typedef uint8_t byte_t;
 //typedef unsigned short uint16_t;
 
 typedef struct huffnode_t {
-	byte_t byte;
+	void *item;
 	long frequency;
 	struct huffnode_t *left;
 	struct huffnode_t *right;
@@ -21,9 +21,9 @@ int isLeaf(huffnode_t *node) {
 	return (node->left == NULL && node->right == NULL);
 }
 
-huffnode_t* createHuffnode(byte_t byte, int frequency, huffnode_t *left, huffnode_t *right) {
+huffnode_t* createHuffnode(void *item, int frequency, huffnode_t *left, huffnode_t *right) {
 	huffnode_t *newNode = (huffnode_t *)malloc(sizeof(huffnode_t));
-	newNode->byte = byte;
+	newNode->item = item;
 	newNode->frequency = frequency;
 	newNode->left = left;
 	newNode->right = right;
@@ -38,15 +38,18 @@ huffnode_t* merge(huffnode_t *node1, huffnode_t *node2) {
 		frequency2 = node2->frequency;
 	}
 
-	return createHuffnode('*', node1->frequency + frequency2, node1, node2);
+	byte_t *byte = (byte_t *)malloc(sizeof(byte_t));
+	*byte = '*';
+
+	return createHuffnode((void *)byte, node1->frequency + frequency2, node1, node2);
 }
 
 void printTreePreorder(huffnode_t *root) {
 	if (root != NULL) {
-		if (isLeaf(root) && (root->byte == '*' || root->byte =='\\'))
+		if (isLeaf(root) && (*((byte_t *)root->item) == '*' || *((byte_t *)root->item) =='\\'))
 			printf("\\");
 
-		printf("%c", root->byte);
+		printf("%c", *((byte_t *)root->item));
 
 		printTreePreorder(root->left);
 		printTreePreorder(root->right);
@@ -55,10 +58,10 @@ void printTreePreorder(huffnode_t *root) {
 
 void writeTreeIntoFile(FILE *file, huffnode_t *root) {
 	if (root != NULL) {
-		if (isLeaf(root) && (root->byte == '*' || root->byte =='\\'))
+		if (isLeaf(root) && (*((byte_t *)root->item) == '*' || *((byte_t *)root->item) =='\\'))
 			fprintf(file, "\\");
 
-		fprintf(file, "%c", root->byte);
+		fprintf(file, "%c", *((byte_t *)root->item));
 
 		writeTreeIntoFile(file, root->left);
 		writeTreeIntoFile(file, root->right);
@@ -69,7 +72,7 @@ int getTreeSize(huffnode_t *tree) {
 	if (tree == NULL)
 		return 0;
 
-	int c = (tree->byte == '*' || tree->byte == '\\') && isLeaf(tree);
+	int c = (*((byte_t *)tree->item) == '*' || *((byte_t *)tree->item) == '\\') && isLeaf(tree);
 	c += getTreeSize(tree->left);
 	c += getTreeSize(tree->right);
 
