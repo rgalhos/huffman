@@ -9,17 +9,13 @@
 #define DEBUG if (0)
 #endif
 
-//typedef unsigned short uint16_t; //
+//typedef unsigned short uint16_t; // hã. talvez mudar isso ai
 
 long getFrequency(heap_t *heap, int index) {
     return ((huffnode_t *)peek(heap, index))->frequency;
 }
 
 void buildBytes(huffnode_t *tree, int current, int treeLevel, hashtable_t *map) {
-	if(tree == NULL){
-		return;
-	}
-
 	if (isLeaf(tree)) {
 		DEBUG printf("LEAF: %c [%d] \t%d\n", *((byte_t *)tree->item), current, treeLevel);
 
@@ -28,6 +24,7 @@ void buildBytes(huffnode_t *tree, int current, int treeLevel, hashtable_t *map) 
 		currentByte[1] = current;
 
 		put(map, (void *)currentByte, *((byte_t *)tree->item));
+
 		return;
 	}
 
@@ -69,24 +66,14 @@ int compress(char *fileName) {
 
 	DEBUG printf("A heap tem %d elementos\n", getHeapSize(heap));
 
-	if(getHeapSize(heap) == 1) {
-		huffnode_t *node1 = dequeue(heap);
-        huffnode_t *merged = merge(node1, NULL);
+	while (getHeapSize(heap) > 1) {
+		huffnode_t *node1 = (huffnode_t *)dequeue(heap);
+		huffnode_t *node2 = (huffnode_t *)dequeue(heap);
+		huffnode_t *merged = merge(node1, node2);
 
-        enqueue(heap, merged);
+		enqueue(heap, merged);
 
-		DEBUG printf("Merged %X [%ld] with NULL [0] --> %c [%ld]\n", *((byte_t *)node1->item), node1->frequency, *((byte_t *)merged->item), merged->frequency);
-	}
-	else {
-		while (getHeapSize(heap) > 1) {
-			huffnode_t *node1 = (huffnode_t *)dequeue(heap);
-			huffnode_t *node2 = (huffnode_t *)dequeue(heap);
-			huffnode_t *merged = merge(node1, node2);
-
-			enqueue(heap, merged);
-
-			DEBUG printf("Merged %X [%ld] with %X [%ld] --> %c [%ld]\n", *((byte_t *)node1->item), node1->frequency, *((byte_t *)node2->item), node2->frequency, *((byte_t *)merged->item), merged->frequency);
-		}
+		DEBUG printf("Merged %X [%ld] with %X [%ld] --> %c [%ld]\n", *((byte_t *)node1->item), node1->frequency, *((byte_t *)node2->item), node2->frequency, *((byte_t *)merged->item), merged->frequency);
 	}
 
 	DEBUG printf("A heap tem %d elementos\n", getHeapSize(heap));

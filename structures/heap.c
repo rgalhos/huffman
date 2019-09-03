@@ -65,6 +65,12 @@ void minHeapify(heap_t *heap, int i) {
 	}
 }
 
+void buildMinHeap(heap_t *heap) {
+	for (int i = getHeapSize(heap) / 2; i > 0; i--) {
+		minHeapify(heap, i);
+	}
+}
+
 void enqueue(heap_t *heap, void *item) {
 	if (heap->size >= heap->maxSize) {
 		fprintf(stderr, "Heap overflow (%d items)\n", heap->size);
@@ -91,6 +97,7 @@ void* dequeue(heap_t *heap) {
 
 	void *item = heap->data[1];
 	heap->data[1] = heap->data[heap->size--];
+	//buildMinHeap(heap);
 	minHeapify(heap, 1);
 
 	return item;
