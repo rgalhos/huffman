@@ -36,13 +36,6 @@ int extract(char *fileName) {
 		return 1;
 	}
 
-	/*
-	if (strstr(fileName, ".huff") == NULL) {
-		printf("THAT'S NOT A .huff FILE WHAT AM I SUPPOSED TO DO???? urrrgh\n");
-		return 1;
-	}
-	*/
-
 	char outputName[strlen(fileName)];
 	strcpy(outputName, fileName);
 	outputName[strlen(fileName) - 5] = '\0';
@@ -114,6 +107,7 @@ int extract(char *fileName) {
 
 		if (isLeaf(node)) {
 			fprintf(output, "%c", *((byte_t *)node->item));
+			node = tree;
 		}
 	}
 
